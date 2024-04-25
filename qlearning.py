@@ -17,10 +17,10 @@ class Game:
             actions.append(action) 
 
         reward = self.rewards[self.actions.index(actions[0])][self.actions.index(actions[1])]
-        # reward1 = reward[0]
-        # reward2 = reward[1]
-        # self.players[0].update_reward(actions[0], reward1)
-        # self.players[1].update_reward(actions[1], reward2)
+        reward1 = reward[0]
+        reward2 = reward[1]
+        self.players[0].update_reward(actions[0], reward1)
+        self.players[1].update_reward(actions[1], reward2)
 
         print("Reward: ", reward)
 
@@ -34,6 +34,7 @@ class Player():
         self.id = id
         self.actions = actions
         self.rewards = {action: 0 for action in actions}
+        self.qTable = QTable(0.1, actions)
 
     def choose_action(self) -> str:
         action = actions[0] if random.random() <= 0.50000 else actions[1]
@@ -41,22 +42,35 @@ class Player():
     
     def update_reward(self,action, reward):
         self.rewards[action] = reward
+        self.qTable.update_q(action,reward)
 
     def print_rewards(self):
         print("Player {} rewards:".format(self.id))
         for action in self.rewards:
             print("\t{}: {}".format(action, self.rewards[action]))
+        self.qTable.print()
     
 
+
+class QTable(): 
+    def __init__(self, alpha,actions):
+        self.alpha = alpha
+        self.values = {action: 0 for action in actions}
+    
+
+    def update_q(self, action, reward ):
+        self.values[action] = self.values[action]+ self.alpha * (reward - self.values[action])
+
+    def print(self):
+        print("\tQTable:")
+        for action in self.values:
+            print("\t\t=> {:10}: {}".format(action, self.values[action]))
 
 
 if __name__ == '__main__':
     # Prisoner's Dilemma Game
     actions = ['Cooperate', 'Defect']
     rewards = [[[3, 3], [0, 5]], [[5, 0], [1, 1]]]
-
-    gamma = 0.8     #discount factor
-    alpha = 0.1     #learning rate
 
     player1 = Player(1, actions)
     player2 = Player(2, actions)

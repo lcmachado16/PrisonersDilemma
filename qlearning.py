@@ -1,6 +1,7 @@
 import numpy as np
 import random
 
+# ========== Game  ========== # 
 class Game: 
     # Constructor
     def __init__(self, players, actions, rewards):
@@ -28,7 +29,7 @@ class Game:
         for i in range(n):
             self.play_match()
 
-      
+# ========== Player ========== # 
 class Player(): 
     def __init__(self,id, actions):
         self.id = id
@@ -37,11 +38,11 @@ class Player():
         self.qTable = QTable(0.1, actions)
 
     def choose_action(self) -> str:
-        action = actions[0] if random.random() <= 0.50000 else actions[1]
+        action = actions[0] if random.random() <= 0.5 else actions[1]
         return action
     
     def update_reward(self,action, reward):
-        self.rewards[action] = reward
+        self.rewards[action] = self.rewards[action] + 1 
         self.qTable.update_q(action,reward)
 
     def print_rewards(self):
@@ -51,7 +52,7 @@ class Player():
         self.qTable.print()
     
 
-
+# ========== QTable ========== # 
 class QTable(): 
     def __init__(self, alpha,actions):
         self.alpha = alpha
@@ -64,9 +65,9 @@ class QTable():
     def print(self):
         print("\tQTable:")
         for action in self.values:
-            print("\t\t=> {:10}: {}".format(action, self.values[action]))
+            print("\t==> {:10}: {}".format(action, self.values[action]))
 
-
+# ========== MAIN ========== # 
 if __name__ == '__main__':
     # Prisoner's Dilemma Game
     actions = ['Cooperate', 'Defect']
@@ -81,10 +82,16 @@ if __name__ == '__main__':
 
     # Start the game
     game = Game(players, actions, rewards)
-    # print(player1.choose_action())
-    game.play_matches(2)
 
-    player1.print_rewards()
+    # === Play n Games === # 
+    print(player1.choose_action())
+    game.play_matches(40000)
+
+    # === Print results === #
+    for i in range(2):
+        print("================ Player {} Results ================".format(i+1))
+        players[i].print_rewards()
+  
   
 
 

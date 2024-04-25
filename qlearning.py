@@ -64,7 +64,7 @@ class QTable():
     def __init__(self, alpha,actions):
         self.alpha = alpha
         # self.values = {action: 0 for action in actions}
-        self.values = {action: random.choice([0, 1, 10, 20]) for action in actions}
+        self.values = {action: random.randint(0, 20) for action in actions}
     
     # method -> update Q-Value
     def update_q(self, action, reward):

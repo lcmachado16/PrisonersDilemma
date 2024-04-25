@@ -18,10 +18,8 @@ class Game:
             actions.append(action) 
 
         reward = self.rewards[self.actions.index(actions[0])][self.actions.index(actions[1])]
-        reward1 = reward[0]
-        reward2 = reward[1]
-        self.players[0].update_reward(actions[0], reward1)
-        self.players[1].update_reward(actions[1], reward2)
+        for i in range(2):  # Update rewards for both players
+            self.players[i].update_reward(actions[i], reward[i])
 
         print("Reward: ", reward)
 
@@ -34,34 +32,43 @@ class Player():
     def __init__(self,id, actions):
         self.id = id
         self.actions = actions
-        self.rewards = {action: 0 for action in actions}
+        self.choice = {action: 0 for action in actions}
         self.qTable = QTable(0.1, actions)
 
     def choose_action(self) -> str:
-        action = actions[0] if random.random() <= 0.5 else actions[1]
+        #starts with random action
+        if self.choice[actions[0]] + self.choice[actions[1]] < 500:
+            action = actions[0] if random.random() <= 0.5 else actions[1]
+        else: 
+            if random.random() <= 0.8: # ==== epsilon greedy === #
+                action = min(self.qTable.values, key=self.qTable.values.get)
+            else: 
+                action = self.actions[random.randint(0,1)]
         return action
     
     def update_reward(self,action, reward):
-        self.rewards[action] = self.rewards[action] + 1 
+        self.choice[action] = self.choice[action] + 1 
         self.qTable.update_q(action,reward)
 
-    def print_rewards(self):
+    def print_choices(self):
         print("Player {} rewards:".format(self.id))
-        for action in self.rewards:
-            print("\t{}: {}".format(action, self.rewards[action]))
+        for action in self.choice:
+            print("\t{}: {}".format(action, self.choice[action]))
         self.qTable.print()
     
 
 # ========== QTable ========== # 
 class QTable(): 
+    # constructor 
     def __init__(self, alpha,actions):
         self.alpha = alpha
         self.values = {action: 0 for action in actions}
     
-
-    def update_q(self, action, reward ):
+    # method -> update Q-Value
+    def update_q(self, action, reward):
         self.values[action] = self.values[action]+ self.alpha * (reward - self.values[action])
 
+    # method -> print Q-Table
     def print(self):
         print("\tQTable:")
         for action in self.values:
@@ -71,7 +78,7 @@ class QTable():
 if __name__ == '__main__':
     # Prisoner's Dilemma Game
     actions = ['Cooperate', 'Defect']
-    rewards = [[[3, 3], [0, 5]], [[5, 0], [1, 1]]]
+    rewards = [[[1, 1], [20, 0]], [[0, 20], [10, 10]]]
 
     player1 = Player(1, actions)
     player2 = Player(2, actions)
@@ -85,12 +92,12 @@ if __name__ == '__main__':
 
     # === Play n Games === # 
     print(player1.choose_action())
-    game.play_matches(40000)
+    game.play_matches(600000)
 
     # === Print results === #
     for i in range(2):
         print("================ Player {} Results ================".format(i+1))
-        players[i].print_rewards()
+        players[i].print_choices()
   
   
 

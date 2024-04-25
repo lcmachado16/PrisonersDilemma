@@ -33,15 +33,16 @@ class Player():
         self.id = id
         self.actions = actions
         self.choice = {action: 0 for action in actions}
-        self.qTable = QTable(0.1, actions)
+        alpha = 0.1 
+        self.qTable = QTable(alpha, actions)
 
     def choose_action(self) -> str:
         #starts with random action
         if self.choice[actions[0]] + self.choice[actions[1]] < 500:
             action = actions[0] if random.random() <= 0.5 else actions[1]
         else: 
-            if random.random() <= 0.8: # ==== epsilon greedy === #
-                action = min(self.qTable.values, key=self.qTable.values.get)
+            if random.random() <= 0.95: # ==== epsilon greedy === #
+                action = max(self.qTable.values, key=self.qTable.values.get)
             else: 
                 action = self.actions[random.randint(0,1)]
         return action
@@ -62,7 +63,8 @@ class QTable():
     # constructor 
     def __init__(self, alpha,actions):
         self.alpha = alpha
-        self.values = {action: 0 for action in actions}
+        # self.values = {action: 0 for action in actions}
+        self.values = {action: random.choice([0, 1, 10, 20]) for action in actions}
     
     # method -> update Q-Value
     def update_q(self, action, reward):
@@ -78,7 +80,7 @@ class QTable():
 if __name__ == '__main__':
     # Prisoner's Dilemma Game
     actions = ['Cooperate', 'Defect']
-    rewards = [[[1, 1], [20, 0]], [[0, 20], [10, 10]]]
+    rewards = [[[-1, -1], [-20, 0]], [[0, -20], [-10, -10]]]
 
     player1 = Player(1, actions)
     player2 = Player(2, actions)

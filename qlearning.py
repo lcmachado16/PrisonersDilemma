@@ -1,6 +1,11 @@
 import numpy as np
 import random
 
+# To do 
+## Implementar decaimento epsilon 
+## Comecar slides
+## Testar outro jogo 
+
 # ========== Game  ========== # 
 class Game: 
     # Constructor
@@ -38,13 +43,10 @@ class Player():
 
     def choose_action(self) -> str:
         #starts with random action
-        if self.choice[actions[0]] + self.choice[actions[1]] < 500:
-            action = actions[0] if random.random() <= 0.5 else actions[1]
+        if random.random() <= 0.95: # ==== epsilon greedy === #
+            action = min(self.qTable.values, key=self.qTable.values.get)
         else: 
-            if random.random() <= 0.95: # ==== epsilon greedy === #
-                action = max(self.qTable.values, key=self.qTable.values.get)
-            else: 
-                action = self.actions[random.randint(0,1)]
+            action = self.actions[random.randint(0,1)]
         return action
     
     def update_reward(self,action, reward):
@@ -80,7 +82,7 @@ class QTable():
 if __name__ == '__main__':
     # Prisoner's Dilemma Game
     actions = ['Cooperate', 'Defect']
-    rewards = [[[-1, -1], [-20, 0]], [[0, -20], [-10, -10]]]
+    rewards = [[[1, 1], [20, 0]], [[0, 20], [10, 10]]]
 
     player1 = Player(1, actions)
     player2 = Player(2, actions)
@@ -102,6 +104,5 @@ if __name__ == '__main__':
         players[i].print_choices()
   
   
-
 
 

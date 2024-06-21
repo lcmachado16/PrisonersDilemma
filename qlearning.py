@@ -1,7 +1,7 @@
 #  
 import random
 import time
-
+import numpy as np 
 # To do 
 ## Implementar decaimento epsilon 
 ## Comecar slides
@@ -16,8 +16,6 @@ class Match:
         self.actions = game.actions
         self.rewards = game.rewards 
         print("Game created")
-
-
 
     #========== Methods ========== #
     # method -> play match
@@ -44,17 +42,18 @@ class Match:
 # Class Player 
 
 class Player(): 
-    def __init__(self,id, actions):
+    def __init__(self,id, actions, min_reward, max_reward):
         self.id = id
         self.actions = actions
-        self.choice = {action: 0 for action in actions}
+        self.choice = {action: 0 for action in self.actions}
         alpha = 0.1 
-        self.qTable = QTable(alpha, actions)
+        
+        self.qTable = QTable(alpha, self.actions,min_reward, max_reward)
 
     def choose_action(self) -> str:
         #starts with random action
-        epsilon = 0.95  # Exploration rate @@TODO: Implement decay
-        if random.random() <= epsilon:
+        epsilon = 0.95  
+        if random.uniform(0,1) <= epsilon:
             action = min(self.qTable.values, key=self.qTable.values.get)
         else: 
             action = self.actions[random.randint(0, len(self.actions)-1)]
@@ -73,21 +72,13 @@ class Player():
 
 # ========== QTable ============================================== # 
 # QTable Class
-class QTable(): 
-    # constructor 
-    def __init__(self, alpha,actions):
+class QTable: 
+    # constructor  
+    def __init__(self, alpha,actions,min_reward, max_reward):
         self.alpha = alpha
         # self.values = {action: 0 for action in actions}
              # self.values = {action: 0 for action in actions}
-        min_value = min([reward for reward in .])
-        max_value = max([reward for reward in actions])
-  
-        while(True):
-            print("Min value: ", min_value)
-            print("Max value: ", max_value)
-            time.sleep(10)
-    
-        self.values = {action: random.randint(0, 1) for action in actions}
+        self.values = {action: random.randint(min_reward, max_reward) for action in actions}
     
     # method -> update Q-Value
     def update_q(self, action, reward):
@@ -110,12 +101,15 @@ class Game:
         self.players = self.__create_players()
 
 
+
+
     def __create_players(self):
-        player1 = Player(1, self.actions)
-        player2 = Player(2, self.actions)
+        min_reward = np.array(self.rewards).min()
+        max_reward = np.array(self.rewards).max()
+        player1 = Player(1, self.actions, min_reward, max_reward)
+        player2 = Player(2, self.actions, min_reward, max_reward)
         return [player1, player2]
     
-
 
 # ========== MAIN  ============================================== # 
  # 
@@ -128,6 +122,13 @@ if __name__ == '__main__':
         'rewards': [[[1, 1], [20, 0]], [[0, 20], [10, 10]]]
     }
 
+    BattleOfSexes = { 
+        'name': 'Battle Of Sexes',
+        'actions': ['Ballet', 'Movie'],
+        'rewards':  [[[1, 4], [0, 0]], [[0, 0], [4, 1]]]
+    }
+
+
     rockScissorPaperRules = {
         'name': 'Rock Scissor Paper',
         'actions': ['Rock', 'Scissor', 'Paper'],
@@ -138,17 +139,25 @@ if __name__ == '__main__':
 
     }
 
+    ParetoDominanceGameRules  = {
+        'name': 'Pareto Dominance Game',
+        'actions': ['L', 'R'],
+        'rewards': [
+            [[9, 9], [0, 8]], 
+            [[8, 0], [7, 7]]
+        ]
+    }
 
+    TwoFingerMorra = {
+        'name': 'Two Finger Morra',
+        'actions': ['One', 'Two'],
+        'rewards': [
+            [[2, -2], [3, -3]],
+            [[3, -3], [2, -2]]
+        ]
+    }
 
-    #Create Game
-    #--- Priosoners Dilemma---------------
-    newGame = Game(prisionersDilemmaRules)
-
-    #--- Rock Scissor Paper ---------------
-    # newGame = Game(rockScissorPaperRules)
-
-
-    # === Create Match === #
+    newGame = Game(TwoFingerMorra)
     match = Match(newGame)
     match.play_matches(200)
 
@@ -162,5 +171,7 @@ if __name__ == '__main__':
     #     players[i].print_choices()
   
   
+
+
 
 

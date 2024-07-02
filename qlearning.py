@@ -7,6 +7,29 @@ import numpy as np
 ## Comecar slides
 ## Testar outro jogo 
 
+# ========== Game ============================================== #  
+# Class Game
+class Game: 
+    def __init__(self, gameRules):
+        self.name    = gameRules['name']
+        self.actions = gameRules['actions']
+        self.rewards = gameRules['rewards']
+        self.players = self.__create_players()
+
+
+
+
+    def __create_players(self):
+        min_reward = np.array(self.rewards).min()
+        max_reward = np.array(self.rewards).max()
+        # print("Min reward: ", min_reward)
+        # print("Max reward: ", max_reward)
+        player1 = Player(1, self.actions, min_reward, max_reward)
+        player2 = Player(2, self.actions, min_reward, max_reward)
+        return [player1, player2]
+    
+
+
 # ========== Match  ============================================== # 
 # Class Match
 class Match: 
@@ -45,7 +68,7 @@ class Player():
     def __init__(self,id, actions, min_reward, max_reward):
         self.id = id
         self.actions = actions
-        self.choice = {action: 0 for action in self.actions}
+        self.choiceHistory = {action: 0 for action in self.actions}
         alpha = 0.1 
         
         self.qTable = QTable(alpha, self.actions,min_reward, max_reward)
@@ -60,7 +83,7 @@ class Player():
         return action
     
     def update_reward(self,action, reward):
-        self.choice[action] = self.choice[action] + 1 
+        self.choiceHistory[action] = self.choice[action] + 1 
         self.qTable.update_q(action,reward)
 
     def print_choices(self):
@@ -91,25 +114,8 @@ class QTable:
             print("\t==> {:10}: {}".format(action, self.values[action]))
 
 
-# ========== Game ============================================== #  
-# Class Game
-class Game: 
-    def __init__(self, gameRules):
-        self.name    = gameRules['name']
-        self.actions = gameRules['actions']
-        self.rewards = gameRules['rewards']
-        self.players = self.__create_players()
 
 
-
-
-    def __create_players(self):
-        min_reward = np.array(self.rewards).min()
-        max_reward = np.array(self.rewards).max()
-        player1 = Player(1, self.actions, min_reward, max_reward)
-        player2 = Player(2, self.actions, min_reward, max_reward)
-        return [player1, player2]
-    
 
 # ========== MAIN  ============================================== # 
  # 
@@ -133,13 +139,14 @@ if __name__ == '__main__':
         'name': 'Rock Scissor Paper',
         'actions': ['Rock', 'Scissor', 'Paper'],
         'rewards': 
-            [[0, -1, 1], 
-            [1, 0, -1],
-            [-1, 1, 0]]
-
+            [ 
+                [[0, -1, 1]], 
+                [[1, 0, -1]],
+                [[-1, 1, 0]]
+            ]
     }
 
-    ParetoDominanceGameRules  = {
+    ParetoDominanceGameRules =  {
         'name': 'Pareto Dominance Game',
         'actions': ['L', 'R'],
         'rewards': [
@@ -148,20 +155,30 @@ if __name__ == '__main__':
         ]
     }
 
-    TwoFingerMorra = {
-        'name': 'Two Finger Morra',
-        'actions': ['One', 'Two'],
-        'rewards': [
-            [[2, -2], [3, -3]],
-            [[3, -3], [2, -2]]
-        ]
-    }
+    #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # while(True): 
+    #     print(prisionersDilemmaRules['actions'])
+    #     random_value = np.random.random()
+    #     print("Random value:", random_value)
+    #     time.sleep(4)
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-    newGame = Game(TwoFingerMorra)
+    #Create Game
+    #--- Priosoners Dilemma---------------
+    # newGame = Game(prisionersDilemmaRules)
+
+    #--- Rock Scissor Paper ---------------
+    # newGame = Game(rockScissorPaperRules)
+
+
+    #--- BattleOfSexes ---------------
+    newGame = Game(prisionersDilemmaRules)
+
+    # === Create Match === #
     match = Match(newGame)
-    match.play_matches(200)
+    match.play_matches(10)
 
-    # === Print results === #
+    # === Print results === #……
     # for player in match.players:
     #     player.print_choices()
 
@@ -171,7 +188,5 @@ if __name__ == '__main__':
     #     players[i].print_choices()
   
   
-
-
 
 

@@ -36,7 +36,7 @@ class QLearningAgent:
         # best_next_action    = np.argmax(self.q_table[next_state])
         # td_target        = reward + self.gamma * self.q_table[next_state][best_next_action]
         # td_error         = td_target - self.q_table[state][action]
-        # self.q_table[state][action] = self.alpha * td_error
+        # self.q_table[state][action] = self.alpha * td_error˚ø
 
 class PrisonersDilemmaEnv:
     def __init__(self):

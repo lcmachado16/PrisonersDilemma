@@ -44,7 +44,7 @@ class Player():
     def choose_action(self) -> str:
         #starts with random action
         if random.random() <= 0.95: # ==== epsilon greedy === #
-            action = min(self.qTable.values, key=self.qTable.values.get)
+            action = max(self.qTable.values, key=self.qTable.values.get)
         else: 
             action = self.actions[random.randint(0,1)]
         return action
@@ -70,7 +70,10 @@ class QTable():
     
     # method -> update Q-Value
     def update_q(self, action, reward):
-        self.values[action] = self.values[action]+ self.alpha * (reward - self.values[action])
+#   Qtable[state][action] = Qtable[state][action] + learning_rate * (reward + gamma * np.max(Qtable[new_state]) - Qtable[state][action])
+        
+        self.values[action] = self.values[action] + self.alpha * (reward + max(self.values.values()) - self.values[action])
+
 
     # method -> print Q-Table
     def print(self):
@@ -82,7 +85,17 @@ class QTable():
 if __name__ == '__main__':
     # Prisoner's Dilemma Game
     actions = ['Cooperate', 'Defect']
-    rewards = [[[1, 1], [20, 0]], [[0, 20], [10, 10]]]
+    rewards = [
+            [[1, 1], [20, 0]],
+            [[0, 20], [10, 10]]
+        ]
+    
+
+
+    # Battle of Sexes Game
+    # actions = ['B', 'F']
+    # rewards = [[[1, 4], [0, 0]], [[0, 0], [4, 1]]]
+    
 
     player1 = Player(1, actions)
     player2 = Player(2, actions)
@@ -95,8 +108,7 @@ if __name__ == '__main__':
     game = Game(players, actions, rewards)
 
     # === Play n Games === # 
-    print(player1.choose_action())
-    game.play_matches(600000)
+    game.play_matches(10)
 
     # === Print results === #
     for i in range(2):

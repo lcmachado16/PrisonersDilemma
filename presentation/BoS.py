@@ -41,8 +41,9 @@ class PrisonersDilemmaEnv:
         self.states = {'s0': 0}        #__SINGLE_STATE_VERSION___
         self.state = self.states['s0']  # O jogo começa no estado 's0'
         self.actions = {
-            0: 'Football', 1: 'Ballet'}  # Definindo as ações
-            # 0: 'Ballet', 1: 'Football'}  # Definindo as ações
+            0: 'Football', 1: 'Ballet'
+        }  # Definindo as ações
+   
         
         self.rewards = {
         # ==== PRISONER'S DILEMMA ===================================
@@ -62,14 +63,11 @@ class PrisonersDilemmaEnv:
        
 
     def reset(self):
-        # self.state = random.choice(list(self.states.values()))  # Reset para um estado aleatório
-        return self.state
-        # return self.states['s0']  ##__SINGLE_STATE_VERSION___
+        return self.states['s0']  ##__SINGLE_STATE_VERSION___
 
     def step(self, state, action1, action2):
         reward1, reward2 = self.rewards[state][(action1, action2)]
-        next_state = state          ##__SINGLE_STATE_VERSION___
-        next_state = self.reset()   ##__STOCHASTIC_GAME_VERSION___
+        next_state = state      
         done = True  # O jogo termina após uma ação
         return next_state, (reward1, reward2), done
 
@@ -96,11 +94,10 @@ class PrisonersDilemmaEnv:
 
 if __name__ == "__main__":
 
-    env = PrisonersDilemmaEnv()
+    env     = PrisonersDilemmaEnv()
+
     actions = env.actions
     max_len = int(max([len(action) for action in actions.values()]))
-    print(max_len)
-    
     state_size = len(env.states)
 
     agent1 = QLearningAgent(state_size=state_size, action_size=2, rewards=env.rewards)
@@ -109,6 +106,7 @@ if __name__ == "__main__":
     
     episodes = 10000
     joint_action_count = env.train(agent1, agent2, episodes)
+    
     print("Q-table do Agente 1 após treinamento:")
     print(agent1.q_table)
     print("Q-table do Agente 2 após treinamento:")
